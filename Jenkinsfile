@@ -15,7 +15,7 @@ pipeline {
     }
     stage("Acceptance test") {
       steps {
-        sh "./gradlew acceptanceTest -Dcalculator.url=http://$CALCIP"
+        sh "./gradlew acceptanceTest -Dcalculator.url=http://$CALCHOST"
       }
     }
     stage("Code coverage") {
