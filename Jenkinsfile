@@ -11,6 +11,7 @@ pipeline {
       steps {
         sh "chmod +x ./gradlew"
         sh "gradle wrapper"
+        sh "echo $CALCHOST"
       }
     }
     stage("Acceptance test") {
