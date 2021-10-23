@@ -10,25 +10,27 @@ pipeline {
     }
   }
   stages {
-    stage("prepare") {
+    stage("Prepare") {
       steps {
         sh "chmod +x ./gradlew"
         sh "gradle wrapper"
         sh "echo $CALCHOST"
       }
     }
-    stage("Acceptance test") {
+    stage("Acceptance Test") {
       steps {
-        sh "echo $CALCHOST"
         sh '''
             ./gradlew acceptanceTest -Dcalculator.url=http://$CALCHOST
             '''
       }
     }
-    stage("Code coverage") {
+    stage("Test Result") {
       steps {
-        sh "./gradlew jacocoTestReport"
-        sh "./gradlew jacocoTestCoverageVerification"
+        publishHTML(target: [
+            reportDir: 'build/reports/tests/acceptanceTest',
+            reportFiles: 'index.html',
+            reportName: "Acceptance test Result"
+        ])
       }
     }
   }
