@@ -1,4 +1,7 @@
 pipeline {
+  environment {
+    CALCHOST = "192.168.49.2:31383"
+  }
   agent {
     kubernetes {
       idleMinutes 5  // how long the pod will live after no jobs have run on it

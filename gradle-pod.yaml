@@ -4,9 +4,6 @@ spec:
   containers:
   - name: gradle
     image: gradle:jdk8
-    env:
-    - name: CALCHOST
-      value: '192.168.49.2:31383'
     command:
     - sleep
     args:
