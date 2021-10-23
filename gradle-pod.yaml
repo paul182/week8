@@ -6,7 +6,7 @@ spec:
     image: gradle:jdk8
     env:
     - name: CALCHOST
-      value: 192.168.49.2:31383
+      value: '192.168.49.2:31383'
     command:
     - sleep
     args:
