@@ -1,0 +1,43 @@
+podTemplate(
+    yaml: '''
+  apiVersion: v1 
+  kind: Pod 
+  spec:
+    serviceAccountName: jenkins-admin
+    containers:
+    - name: centos 
+      image: centos
+      command:
+      - sleep 
+      args:
+      - 99d 
+      restartPolicy: Never 
+      ''') 
+    {
+  node(POD_LABEL) {
+    stage('Prepare') {
+      git url: "https://github.com/paul182/week8" , branch: "main"
+    }
+    stage('Pre Update Test') {
+        sh '''
+        curl -ik -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT/api/v1/namespaces/staging/pods -XGET -H "Content-type: application/yaml"
+        curl http://192.168.49.2:31165/sum?a=1\\&b=2
+        curl http://192.168.49.2:31165/div?a=5\\&b=2
+        '''
+    }
+    stage('Update') {
+        sh '''
+        cd w9q1
+        curl -ik -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT/apis/apps/v1/namespaces/staging/deployments/calculator-deployment -XPUT -H "Content-type: application/yaml" --data-binary @calculator.yaml
+        sleep 1m
+        '''
+    }
+    stage('Post Update Test') {
+        sh '''
+        curl -ik -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT/api/v1/namespaces/staging/pods -XGET -H "Content-type: application/yaml"
+        curl http://192.168.49.2:31165/sum?a=1\\&b=2
+        curl http://192.168.49.2:31165/div?a=5\\&b=2
+        '''
+    }
+  }
+}
